@@ -278,7 +278,7 @@ def understand_intent(user_text, chat_id):
     full_prompt = INTENT_SYSTEM_PROMPT + "\n\nPichli baatcheet:\n" + history_text
     try:
         response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             temperature=0,
             response_format={"type": "json_object"},
             messages=[{"role": "system", "content": full_prompt}, {"role": "user", "content": user_text}]
@@ -291,7 +291,7 @@ def understand_intent(user_text, chat_id):
 
 def compose_message_with_ai(description):
     response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[
             {"role": "system", "content": "Tum ek professional message writer ho. User jo describe kare uske hisaab se ek acha message likho, sirf final message do."},
             {"role": "user", "content": description}
@@ -321,7 +321,7 @@ async def get_ai_chat_reply(chat_id, user_text):
     messages.append({"role": "user", "content": user_text})
 
     response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=messages,
         temperature=0.9,
         max_tokens=200
@@ -435,7 +435,7 @@ async def reply_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         instruction = result.get("instruction", "")
         if last_msg:
             modify_response = groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[
                     {"role": "system", "content": "Tum ek editor ho. Original message ko instruction ke hisaab se modify karo, naya content mat banao."},
                     {"role": "user", "content": "Original message:\n" + last_msg + "\n\nInstruction: " + instruction}

@@ -29,8 +29,6 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # ==================== FLASK KEEP-ALIVE SERVER ====================
-# Render ko "alive" dikhane ke liye ye chhota web server (naam alag rakha
-# hai taaki niche wale Telegram bot ke "app" se clash na ho)
 flask_app = Flask(__name__)
 
 
@@ -414,10 +412,13 @@ async def reply_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         add_to_memory(chat_id, "bot_activity", "Interval mobile update rok diya")
 
     elif intent == "mobile_update":
-        target_chat_id = GROUP_CHAT_ID if result.get("target") == "group" else chat_id
+        target = result.get("target", "me")
+        target_chat_id = GROUP_CHAT_ID if target == "group" else chat_id
         articles = fetch_mobile_articles()
         if articles:
             await send_one_article(bot_app, target_chat_id, articles[0])
+            if target == "group":
+                await message.reply_text("Bhej diya group mein! ✅")
         else:
             await message.reply_text("Abhi koi mobile update nahi mila.")
 
@@ -484,7 +485,6 @@ telegram_app.add_handler(CommandHandler("testmobile", test_mobile_command))
 telegram_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply_message))
 
 if __name__ == "__main__":
-    # Flask ko alag thread mein chalao taaki Render ko "port pe alive" dikhe
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()
